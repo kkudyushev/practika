@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using Microsoft.VisualBasic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,9 +20,13 @@ namespace WpfApp1
         public MainWindow()
         {
             InitializeComponent();
-            Settings.loginTimer = new System.Windows.Threading.DispatcherTimer();
-            Settings.loginTimer.Interval = TimeSpan.FromSeconds(15);
-            Settings.loginTimer.Tick += LoginTimer_Tick;
+
+            if (Settings.FailedAuthCount >= 3)
+            {
+                BlockInputs();
+
+                errorLabel.Content = "Иди отсюда умник, решил он мою систему анти-брута обмануть";
+            }
         }
 
         private void TextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -32,12 +38,11 @@ namespace WpfApp1
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
+
             if (Settings.FailedAuthCount >= 3)
             {
-                txtUsername.IsEnabled = false;
-                txtPasswordBox.IsEnabled = false;
-                txtPassword.IsEnabled = false;
-                Settings.loginTimer.Start();
+                BlockInputs();
+                
                 errorLabel.Content = "Иди отсюда умник, решил он мою систему анти-брута обмануть";
                 return;
             }
@@ -48,6 +53,7 @@ namespace WpfApp1
 
             txtUsername.BorderBrush = new SolidColorBrush(Colors.Gray);
             txtPassword.BorderBrush = new SolidColorBrush(Colors.Gray);
+            txtPasswordBox.BorderBrush = new SolidColorBrush(Colors.Gray);
 
             User isValidUser = db.Users.SingleOrDefault(x => x.Login == loginOrEmail && x.Password == userPassword);
 
@@ -64,10 +70,8 @@ namespace WpfApp1
 
                 if (Settings.FailedAuthCount >= 3)
                 {
-                    txtUsername.IsEnabled = false;
-                    txtPassword.IsEnabled = false;
-                    txtPasswordBox.IsEnabled = false;
-                    Settings.loginTimer.Start();
+                    if (!Settings.isBlocking)
+                        BlockInputs();
                 }
 
                 return;
@@ -83,7 +87,6 @@ namespace WpfApp1
             txtPassword.IsEnabled = true;
             txtUsername.IsEnabled = true;
             Settings.FailedAuthCount = 0;
-            Settings.loginTimer.Stop();
         }
 
         private void txtUsername_GotFocus(object sender, RoutedEventArgs e)
@@ -133,6 +136,45 @@ namespace WpfApp1
             txtPasswordBox.Password = userPassword;
 
             isPasswordVisible = !isPasswordVisible;
+        }
+
+        private void BlockInputs()
+        {
+            Settings.blockThread = new Thread(() =>
+            {
+                var start = DateTime.Now;
+                var end = start.AddSeconds(15);
+                while (true)
+                {
+                    var currentTime = DateTime.Now;
+                    if (currentTime >= end)
+                        break;
+
+                    Settings.isBlocking = true;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        txtUsername.IsEnabled = false;
+                        txtPassword.IsEnabled = false;
+                        txtPasswordBox.IsEnabled = false;
+                        btnLogin.IsEnabled = false;
+                    });
+
+                    Thread.Sleep(400);
+
+                }
+                Dispatcher.Invoke(() =>
+                {
+                    txtUsername.IsEnabled = true;
+                    txtPassword.IsEnabled = true;
+                    txtPasswordBox.IsEnabled = true;
+                    btnLogin.IsEnabled = true;
+                });
+                Settings.FailedAuthCount = 0;
+                Settings.isBlocking = false;
+            });
+
+            Settings.blockThread.Start();
         }
     }
 }

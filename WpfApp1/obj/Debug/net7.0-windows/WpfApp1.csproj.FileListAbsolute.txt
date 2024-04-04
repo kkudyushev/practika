@@ -134,3 +134,4 @@ C:\Users\student\Documents\Кудюшев практика\practika-master\WpfAp
 C:\Users\student\Documents\Кудюшев практика\practika-master\WpfApp1\obj\Debug\net7.0-windows\WpfApp1.pdb
 C:\Users\student\Documents\Кудюшев практика\practika-master\WpfApp1\obj\Debug\net7.0-windows\WpfApp1.genruntimeconfig.cache
 C:\Users\student\Documents\Кудюшев практика\practika-master\WpfApp1\obj\Debug\net7.0-windows\ref\WpfApp1.dll
+C:\Users\student\Documents\Кудюшев практика\practika-master\WpfApp1\obj\Debug\net7.0-windows\WpfApp1.sourcelink.json

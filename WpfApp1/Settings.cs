@@ -3,6 +3,7 @@
 class Settings
 {
     public static int FailedAuthCount = 0;
-    public static DispatcherTimer loginTimer;
+    public static Thread blockThread;
+    public static bool isBlocking = false;
 }
 
