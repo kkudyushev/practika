@@ -38,7 +38,7 @@
 
                 <PasswordBox x:Name="txtPasswordBox" Height="60" Width="550" Padding="5" BorderBrush="Gray"
                              FontSize="22" VerticalAlignment="Center"
-                             Visibility="Collapsed"/>
+                             Visibility="Collapsed" />
 
                 <Image x:Name="Eye" Source="Images/hide.png" Width="40" Height="40" Margin="10,0,0,0" MouseLeftButtonUp="Image_MouseLeftButtonUp" />
             </StackPanel>
